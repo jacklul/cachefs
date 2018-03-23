@@ -1,0 +1,32 @@
+{
+  "name": "jacklul/cachefs",
+  "type": "library",
+  "description": "Filesystem that uses PSR-16 cache interface as storage",
+  "keywords": [
+    "cache",
+    "filesystem",
+    "cachefs"
+  ],
+  "license": "MIT",
+  "support": {
+    "issues": "https://github.com/jacklul/cachefs/issues",
+    "source": "https://github.com/jacklul/cachefs"
+  },
+  "authors": [
+    {
+      "name": "Jack'lul",
+      "email": "jacklulcat@gmail.com",
+      "homepage": "https://jacklul.github.io",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^5.5|^7.0",
+    "psr/simple-cache": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "jacklul\\CacheFS\\": "src/"
+    }
+  }
+}
