@@ -45,6 +45,11 @@ final class CacheFS
     private $dir;
 
     /**
+     * @var bool
+     */
+    private $dir_listing;
+
+    /**
      * @var CacheInterface
      */
     private static $cache;
@@ -87,18 +92,36 @@ final class CacheFS
     private function dir_list($path)
     {
         $path = $this->fixPath($path);
+        $fixed_path = str_replace(self::$protocol . '://', '', $path);
 
         $dir = [];
         foreach ($this->index as $entry => $info) {
             if (strpos($entry, self::$protocol . '://') !== false) {
                 if (strpos($entry, $path) !== false && $entry !== $path) {
-                    $dir[] = $path . '/' . explode('/', str_replace($path, '', $entry))[1];
+                    $tmp_path = str_replace($path . '/', '', $entry);
+
+                    if (substr($tmp_path, 0, strlen(self::$protocol)) === self::$protocol) {
+                        continue;
+                    }
+
+                    if (substr($tmp_path, 0, 1) === '/') {
+                        $tmp_path = substr($tmp_path, 1);
+                    }
+
+                    $tmp_path = explode('/', $tmp_path);
+
+                    isset($tmp_path[0]) && $dir[] = $tmp_path[0];
                 }
             }
         }
 
-        array_unshift($dir, self::$protocol . '://');   // Insert dummy element for next() to work correctly
-        $dir = array_unique($dir);
+        if (!empty($dir)) {
+            array_unshift($dir, '..');
+            array_unshift($dir, '.');
+            $dir = array_unique($dir, SORT_REGULAR);
+        } else {
+            trigger_error('Directory not found: ' . $path, E_USER_WARNING);
+        }
 
         return $dir;
     }
@@ -529,6 +552,14 @@ final class CacheFS
     public function dir_readdir()
     {
         if ($this->dir !== null) {
+            if (!$this->dir_listing) {
+                $this->dir_listing = true;
+
+                if (isset($this->dir[0])) {
+                    return $this->dir[0];
+                }
+            }
+
             return next($this->dir);
         }
 
@@ -629,6 +660,9 @@ final class CacheFS
         // Trim slashes
         $path = trim($path, '/');
 
+        // Remove '/./'
+        $path = str_replace('/./', '/', $path);
+
         // Handle '../' relative paths
         $path_exploded = explode('/', $path);
         $path_modified = false;
@@ -649,6 +683,9 @@ final class CacheFS
 
         // Restore the handler prefix
         $path = self::$protocol . '://' . $path;
+
+        // Fix 'cachefs:///' situation
+        $path = str_replace('///', '//', $path);
 
         return $path;
     }
