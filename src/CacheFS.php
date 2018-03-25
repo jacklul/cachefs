@@ -92,13 +92,12 @@ final class CacheFS
     private function dir_list($path)
     {
         $path = $this->fixPath($path);
-        $fixed_path = str_replace(self::$protocol . '://', '', $path);
 
         $dir = [];
         foreach ($this->index as $entry => $info) {
             if (strpos($entry, self::$protocol . '://') !== false) {
                 if (strpos($entry, $path) !== false && $entry !== $path) {
-                    $tmp_path = str_replace($path . '/', '', $entry);
+                    $tmp_path = str_replace(str_replace('///', '//', $path . '/'), '', $entry);
 
                     if (substr($tmp_path, 0, strlen(self::$protocol)) === self::$protocol) {
                         continue;
@@ -657,11 +656,11 @@ final class CacheFS
         // Replace double slashes and trim slashes
         $path = str_replace('//', '/', str_replace('\\', '/', $path));
 
-        // Trim slashes
-        $path = trim($path, '/');
-
         // Remove '/./'
         $path = str_replace('/./', '/', $path);
+
+        // Trim slashes
+        $path = trim($path, '/');
 
         // Handle '../' relative paths
         $path_exploded = explode('/', $path);
