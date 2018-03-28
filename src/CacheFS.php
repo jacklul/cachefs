@@ -114,13 +114,9 @@ final class CacheFS
             }
         }
 
-        if (!empty($dir)) {
-            array_unshift($dir, '..');
-            array_unshift($dir, '.');
-            $dir = array_unique($dir, SORT_REGULAR);
-        } else {
-            trigger_error('Directory not found: ' . $path, E_USER_WARNING);
-        }
+        array_unshift($dir, '..');
+        array_unshift($dir, '.');
+        $dir = array_unique($dir, SORT_REGULAR);
 
         return $dir;
     }
