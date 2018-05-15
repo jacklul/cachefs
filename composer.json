@@ -24,9 +24,17 @@
     "php": "^5.5|^7.0",
     "psr/simple-cache": "^1.0"
   },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.2"
+  },
   "autoload": {
     "psr-4": {
       "jacklul\\CacheFS\\": "src/"
     }
+  },
+  "scripts": {
+    "check-code": [
+      "\"vendor/bin/phpcs\" -snp --standard=PSR2 --encoding=utf-8 --report-width=150 src/"
+    ]
   }
 }
