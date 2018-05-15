@@ -1,7 +1,7 @@
 {
   "name": "jacklul/cachefs",
   "type": "library",
-  "description": "Filesystem that uses PSR-16 cache interface as storage",
+  "description": "Filesystem wrapper that uses PSR-16 cache interface as storage",
   "keywords": [
     "cache",
     "filesystem",
